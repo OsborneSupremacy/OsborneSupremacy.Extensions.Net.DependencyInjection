@@ -39,4 +39,4 @@ jobs:
 
     - name: Publish NuGet package
       run: |
-        dotnet nuget push /home/runner/work/Zeal.S3.Lambda.Utility/Zeal.S3.Lambda.Utility/Zeal.S3.Lambda.Utility/bin/Release/*.nupkg --skip-duplicate
+        dotnet nuget push /home/runner/work/OsborneSupremacy.Extensions.Net.DependencyInjection/OsborneSupremacy.Extensions.Net.DependencyInjection/src/Extensions/bin/Release/*.nupkg --skip-duplicate
