@@ -8,6 +8,7 @@
     <Version>1.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
+    <PackageId>OsborneSupremacy.Extensions.Net.DependencyInjection</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

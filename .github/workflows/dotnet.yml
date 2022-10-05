@@ -37,4 +37,6 @@ jobs:
         dotnet build -c Release
         dotnet pack -c Release -o out
 
-
+    - name: Publish NuGet package
+      run: |
+        dotnet nuget push /home/runner/work/Zeal.S3.Lambda.Utility/Zeal.S3.Lambda.Utility/Zeal.S3.Lambda.Utility/bin/Release/*.nupkg --skip-duplicate
