@@ -31,4 +31,10 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
 
+    - name: Build project and generate NuGet package
+      run: |
+        cd src/Extensions
+        dotnet build -c Release
+        dotnet pack -c Release -o out
+
 
