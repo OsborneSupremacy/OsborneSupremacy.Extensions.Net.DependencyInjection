@@ -7,20 +7,19 @@ public static class ServiceCollectionExtensions
         var services = Assembly.GetAssembly(type)!
             .GetTypes()
             .Where(x => !x.IsAbstract)
-            .Where(x => x.IsPublic);
+            .Where(x => x.IsPublic)
+            .Where(x => x.GetCustomAttribute<ServiceLifetimeAttribute>() is not null);
 
         foreach (var service in services)
         {
-            var lifetime = service.GetCustomAttribute<ServiceLifetimeAttribute>()?.ServiceLifetime;
-            if (lifetime == null)
-                continue;
+            var lifetime = service.GetCustomAttribute<ServiceLifetimeAttribute>()!.ServiceLifetime;
 
             var targetType = service.GetCustomAttribute<RegistrationTargetAttribute>()?.Type;
 
             if (targetType == null)
-                serviceCollection.AddService(service, lifetime.Value);
+                serviceCollection.AddService(service, lifetime);
             else
-                serviceCollection.AddService(targetType, service, lifetime.Value);
+                serviceCollection.AddService(targetType, service, lifetime);
         }
 
         return serviceCollection;
@@ -93,7 +92,7 @@ public static class ServiceCollectionExtensions
         )
     {
         if (!_addDelegateMap.TryGetValue(serviceLifetime, out var addDelegate))
-            throw new ArgumentOutOfRangeException(serviceLifetime.ToString());
+            throw NotFoundExceptionDelegate(serviceLifetime);
 
         return addDelegate(service, serviceCollection);
     }
@@ -106,8 +105,13 @@ public static class ServiceCollectionExtensions
         )
     {
         if (!_addImplementationDelegateMap.TryGetValue(serviceLifetime, out var addDelegate))
-            throw new ArgumentOutOfRangeException(serviceLifetime.ToString());
+            throw NotFoundExceptionDelegate(serviceLifetime);
 
         return addDelegate(serviceType, implementationType, serviceCollection);
     }
+
+    private static Func<ServiceLifetime, ArgumentOutOfRangeException> NotFoundExceptionDelegate = (ServiceLifetime serviceLifetime) =>
+    {
+        return new ArgumentOutOfRangeException($"{nameof(ServiceLifetime)} out of range: {serviceLifetime}");
+    };
 }
