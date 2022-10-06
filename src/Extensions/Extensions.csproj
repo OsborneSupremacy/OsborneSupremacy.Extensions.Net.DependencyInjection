@@ -10,6 +10,12 @@
     <RepositoryUrl>https://github.com/OsborneSupremacy/OsborneSupremacy.Extensions.Net.DependencyInjection</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageId>OsborneSupremacy.Extensions.Net.DependencyInjection</PackageId>
+    <Title>Attributes and extension methods to help with registering services declaratively. </Title>
+    <Description>Attributes and extension methods to help with registering services declaratively.  Wraps Microsoft's ServiceCollectionServiceExtensions. </Description>
+    <PackageTags>DependencyInjection;.NET</PackageTags>
+    <PackageProjectUrl>https://github.com/OsborneSupremacy/OsborneSupremacy.Extensions.Net.DependencyInjection</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>UPL-1.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
