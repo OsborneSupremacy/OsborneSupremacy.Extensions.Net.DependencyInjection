@@ -18,9 +18,6 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
-        source-url: https://api.nuget.org/v3/index.json
-      env:
-        NUGET_AUTH_TOKEN: ${{secrets.NUGET_API_KEY}}
 
     - name: Restore dependencies
       run: dotnet restore
@@ -37,6 +34,8 @@ jobs:
         dotnet build -c Release
         dotnet pack -c Release -o out
 
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.5
+
     - name: Publish NuGet package
-      run: |
-        dotnet nuget push /home/runner/work/OsborneSupremacy.Extensions.Net.DependencyInjection/OsborneSupremacy.Extensions.Net.DependencyInjection/src/Extensions/bin/Release/*.nupkg --skip-duplicate
+      run: nuget push **\*.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
