@@ -110,7 +110,7 @@ public static class ServiceCollectionExtensions
         return addDelegate(serviceType, implementationType, serviceCollection);
     }
 
-    private static Func<ServiceLifetime, ArgumentOutOfRangeException> NotFoundExceptionDelegate = (ServiceLifetime serviceLifetime) =>
+    private readonly static Func<ServiceLifetime, ArgumentOutOfRangeException> NotFoundExceptionDelegate = (ServiceLifetime serviceLifetime) =>
     {
         return new ArgumentOutOfRangeException($"{nameof(ServiceLifetime)} out of range: {serviceLifetime}");
     };
