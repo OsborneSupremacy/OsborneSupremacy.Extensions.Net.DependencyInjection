@@ -2,9 +2,17 @@
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection RegisterServicesInAssembly(this IServiceCollection serviceCollection, Type type)
+    public static IServiceCollection RegisterServicesInAssembly(this IServiceCollection serviceCollection, Type type) =>
+        serviceCollection
+            .RegisterServicesInAssembly(type.Assembly);
+
+    public static IServiceCollection RegisterServicesInAssemblyContaining<T>(this IServiceCollection serviceCollection) =>
+        serviceCollection
+            .RegisterServicesInAssembly(typeof(T).Assembly);
+
+    public static IServiceCollection RegisterServicesInAssembly(this IServiceCollection serviceCollection, Assembly assembly)
     {
-        var services = Assembly.GetAssembly(type)!
+        var services = assembly
             .GetTypes()
             .Where(x => !x.IsAbstract)
             .Where(x => x.IsPublic)
