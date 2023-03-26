@@ -1,6 +1,6 @@
 ﻿namespace OsborneSupremacy.Extensions.Net.DependencyInjection;
 
-[AttributeUsage(AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public class RegistrationTargetAttribute : Attribute
 {
     public RegistrationTargetAttribute(Type type)

@@ -22,12 +22,16 @@ public static class ServiceCollectionExtensions
         {
             var lifetime = service.GetCustomAttribute<ServiceLifetimeAttribute>()!.ServiceLifetime;
 
-            var targetType = service.GetCustomAttribute<RegistrationTargetAttribute>()?.Type;
+            var targets = service.GetCustomAttributes<RegistrationTargetAttribute>();
 
-            if (targetType == null)
+            if(!targets.Any())
+            {
                 serviceCollection.AddService(service, lifetime);
-            else
-                serviceCollection.AddService(targetType, service, lifetime);
+                continue;
+            }
+
+            foreach(var target in targets)
+                serviceCollection.AddService(target.Type, service, lifetime);
         }
 
         return serviceCollection;

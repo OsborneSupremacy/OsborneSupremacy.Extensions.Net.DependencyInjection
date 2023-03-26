@@ -56,6 +56,24 @@ public class ServiceCollectionExtensionsTests
         // assert
         implementation1.Should().NotBeNull().And.BeOfType<TestImplementationClass1>();
     }
+
+    [Fact]
+    public void RegisterServicesInAssembly_Should_Register_Multiple_Implementations()
+    {
+        // arrange
+        ServiceCollection sut = new ServiceCollection();
+
+        // act
+        sut.RegisterServicesInAssembly(typeof(TestImplementationClass2));
+        var provider = sut.BuildServiceProvider();
+
+        var implementation2 = provider.GetService<TestInterface2>();
+        var implementation3 = provider.GetService<TestInterface3>();
+
+        // assert
+        implementation2.Should().NotBeNull().And.BeOfType<TestImplementationClass2>();
+        implementation3.Should().NotBeNull().And.BeOfType<TestImplementationClass2>();
+    }
 }
 
 
