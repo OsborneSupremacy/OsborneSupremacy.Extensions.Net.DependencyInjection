@@ -1,9 +1,4 @@
-﻿using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using OsborneSupremacy.Extensions.Net.DependencyInjection;
-using System.Diagnostics.CodeAnalysis;
-
-namespace DependencyInjectionExtensions.Tests;
+﻿namespace DependencyInjectionExtensions.Tests;
 
 [ExcludeFromCodeCoverage]
 public class ServiceCollectionExtensionsTests
@@ -46,25 +41,21 @@ public class ServiceCollectionExtensionsTests
         class2i1.Should().NotBeNull();
     }
 
+    [Fact]
+    public void RegisterServicesInAssembly_Should_Register_Implementation()
+    {
+        // arrange
+        ServiceCollection sut = new ServiceCollection();
+
+        // act
+        sut.RegisterServicesInAssembly(typeof(TestImplementationClass1));
+        var provider = sut.BuildServiceProvider();
+
+        var implementation1 = provider.GetService<TestInterface1>();
+
+        // assert
+        implementation1.Should().NotBeNull().And.BeOfType<TestImplementationClass1>();
+    }
 }
 
-public static class ServiceCollectionExtensions
-{
-    public static ServiceProvider BuildServiceProvider(this ServiceCollection input) =>
-        input.BuildServiceProvider
-        (
-            new ServiceProviderOptions() { ValidateOnBuild = true, ValidateScopes = true }
-        );
-}
 
-[ServiceLifetime(ServiceLifetime.Transient)]
-public class TransientTestClass1 { }
-
-[ServiceLifetime(ServiceLifetime.Transient)]
-public class TransientTestClass2 { }
-
-[ServiceLifetime(ServiceLifetime.Singleton)]
-public class SingletonTestClass1 { }
-
-[ServiceLifetime(ServiceLifetime.Singleton)]
-public class SingletonTestClass2 { }
