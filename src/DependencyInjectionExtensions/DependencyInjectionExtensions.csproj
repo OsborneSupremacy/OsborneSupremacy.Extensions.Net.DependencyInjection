@@ -19,7 +19,6 @@
     <PackageReleaseNotes>Updated ServiceLifetimeAttribute to allow a class to be registered for multiple interfaces.</PackageReleaseNotes>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <Authors>OsborneSupremacy</Authors>
-    <LangVersion>13</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
