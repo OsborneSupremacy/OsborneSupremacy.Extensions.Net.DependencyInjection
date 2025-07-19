@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
         serviceCollection
             .RegisterServicesInAssembly(typeof(T).Assembly);
 
+    // ReSharper disable once MemberCanBePrivate.Global
     public static IServiceCollection RegisterServicesInAssembly(this IServiceCollection serviceCollection, Assembly assembly)
     {
         var services = assembly
@@ -22,7 +23,7 @@ public static class ServiceCollectionExtensions
         {
             var lifetime = service.GetCustomAttribute<ServiceLifetimeAttribute>()!.ServiceLifetime;
 
-            var targets = service.GetCustomAttributes<RegistrationTargetAttribute>();
+            var targets = service.GetCustomAttributes<RegistrationTargetAttribute>().ToList();
 
             if(!targets.Any())
             {
@@ -39,30 +40,21 @@ public static class ServiceCollectionExtensions
 
     private delegate IServiceCollection AddServiceDelegate(Type service, IServiceCollection serviceCollection);
 
-    private static readonly AddServiceDelegate _addTransientDelegate =
-        (Type service, IServiceCollection serviceCollection) =>
-        {
-            return serviceCollection.AddTransient(service);
-        };
+    private static readonly AddServiceDelegate AddTransientDelegate =
+        (service, serviceCollection) => serviceCollection.AddTransient(service);
 
-    private static readonly AddServiceDelegate _addSingletonDelegate =
-        (Type service, IServiceCollection serviceCollection) =>
-        {
-            return serviceCollection.AddSingleton(service);
-        };
+    private static readonly AddServiceDelegate AddSingletonDelegate =
+        (service, serviceCollection) => serviceCollection.AddSingleton(service);
 
-    private static readonly AddServiceDelegate _addScopedDelegate =
-        (Type service, IServiceCollection serviceCollection) =>
-        {
-            return serviceCollection.AddScoped(service);
-        };
+    private static readonly AddServiceDelegate AddScopedDelegate =
+        (service, serviceCollection) => serviceCollection.AddScoped(service);
 
     private static readonly Dictionary<ServiceLifetime, AddServiceDelegate>
-        _addDelegateMap = new()
+        AddDelegateMap = new()
         {
-            { ServiceLifetime.Transient, _addTransientDelegate },
-            { ServiceLifetime.Singleton, _addSingletonDelegate },
-            { ServiceLifetime.Scoped, _addScopedDelegate }
+            { ServiceLifetime.Transient, AddTransientDelegate },
+            { ServiceLifetime.Singleton, AddSingletonDelegate },
+            { ServiceLifetime.Scoped, AddScopedDelegate }
         };
 
     private delegate IServiceCollection AddImplementationDelegte(
@@ -71,44 +63,37 @@ public static class ServiceCollectionExtensions
         IServiceCollection serviceCollection
     );
 
-    private static readonly AddImplementationDelegte _addTransientImplementationDelegate =
-        (Type serviceType, Type implementationType, IServiceCollection serviceCollection) =>
-        {
-            return serviceCollection.AddTransient(serviceType, implementationType);
-        };
+    private static readonly AddImplementationDelegte AddTransientImplementationDelegate =
+        (serviceType, implementationType, serviceCollection) => serviceCollection.AddTransient(serviceType, implementationType);
 
-    private static readonly AddImplementationDelegte _addSingletonImplementationDelegate =
-        (Type serviceType, Type implementationType, IServiceCollection serviceCollection) =>
-        {
-            return serviceCollection.AddSingleton(serviceType, implementationType);
-        };
+    private static readonly AddImplementationDelegte AddSingletonImplementationDelegate =
+        (serviceType, implementationType, serviceCollection) => serviceCollection.AddSingleton(serviceType, implementationType);
 
-    private static readonly AddImplementationDelegte _addScopedImplementationDelegate =
-        (Type serviceType, Type implementationType, IServiceCollection serviceCollection) =>
-        {
-            return serviceCollection.AddScoped(serviceType, implementationType);
-        };
+    private static readonly AddImplementationDelegte AddScopedImplementationDelegate =
+        (serviceType, implementationType, serviceCollection) => serviceCollection.AddScoped(serviceType, implementationType);
 
     private static readonly Dictionary<ServiceLifetime, AddImplementationDelegte>
-        _addImplementationDelegateMap = new()
+        AddImplementationDelegateMap = new()
         {
-            { ServiceLifetime.Transient, _addTransientImplementationDelegate },
-            { ServiceLifetime.Singleton, _addSingletonImplementationDelegate },
-            { ServiceLifetime.Scoped, _addScopedImplementationDelegate }
+            { ServiceLifetime.Transient, AddTransientImplementationDelegate },
+            { ServiceLifetime.Singleton, AddSingletonImplementationDelegate },
+            { ServiceLifetime.Scoped, AddScopedImplementationDelegate }
         };
 
+    // ReSharper disable once MemberCanBePrivate.Global
     public static IServiceCollection AddService(
         this IServiceCollection serviceCollection,
         Type service,
         ServiceLifetime serviceLifetime
         )
     {
-        if (!_addDelegateMap.TryGetValue(serviceLifetime, out var addDelegate))
+        if (!AddDelegateMap.TryGetValue(serviceLifetime, out var addDelegate))
             throw NotFoundExceptionDelegate(serviceLifetime);
 
         return addDelegate(service, serviceCollection);
     }
 
+    // ReSharper disable once MemberCanBePrivate.Global
     public static IServiceCollection AddService(
         this IServiceCollection serviceCollection,
         Type serviceType,
@@ -116,14 +101,12 @@ public static class ServiceCollectionExtensions
         ServiceLifetime serviceLifetime
         )
     {
-        if (!_addImplementationDelegateMap.TryGetValue(serviceLifetime, out var addDelegate))
+        if (!AddImplementationDelegateMap.TryGetValue(serviceLifetime, out var addDelegate))
             throw NotFoundExceptionDelegate(serviceLifetime);
 
         return addDelegate(serviceType, implementationType, serviceCollection);
     }
 
-    private readonly static Func<ServiceLifetime, ArgumentOutOfRangeException> NotFoundExceptionDelegate = (ServiceLifetime serviceLifetime) =>
-    {
-        return new ArgumentOutOfRangeException($"{nameof(ServiceLifetime)} out of range: {serviceLifetime}");
-    };
+    private static readonly Func<ServiceLifetime, ArgumentOutOfRangeException> NotFoundExceptionDelegate = serviceLifetime =>
+        new ArgumentOutOfRangeException($"{nameof(ServiceLifetime)} out of range: {serviceLifetime}");
 }
