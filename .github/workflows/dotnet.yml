@@ -35,7 +35,10 @@ jobs:
         dotnet pack -c Release -o out
 
     - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.0.5
+      uses: NuGet/setup-nuget@v2
+
+    - name: Install Mono
+      run: sudo apt install mono-devel
 
     - name: Publish NuGet package
       run: nuget push **\*.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}} -SkipDuplicate
